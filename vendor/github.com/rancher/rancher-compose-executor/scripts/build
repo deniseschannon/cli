@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+cd $(dirname $0)/..
+
+source $(dirname $0)/version
+
+declare -A OS_ARCH_ARG
+
+OS_PLATFORM_ARG=(linux windows darwin)
+OS_ARCH_ARG[linux]="amd64"
+
+go generate
+go build -ldflags="-w -X github.com/rancher/rancher-compose-executor/version.VERSION=$VERSION" -o bin/rancher-compose
+
+if [ -n "$CROSS" ]; then
+    rm -rf build/bin
+    mkdir -p build/bin
+    for OS in ${OS_PLATFORM_ARG[@]}; do
+        for ARCH in ${OS_ARCH_ARG[${OS}]}; do
+            OUTPUT_BIN="build/bin/rancher-compose_$OS-$ARCH"
+            if test "$OS" = "windows"; then
+                OUTPUT_BIN="${OUTPUT_BIN}.exe"
+            fi
+            echo "Building binary for $OS/$ARCH..."
+            GOARCH=$ARCH GOOS=$OS CGO_ENABLED=0 go build \
+                  -ldflags="-w -X github.com/rancher/rancher-compose-executor/version.VERSION=$VERSION" \
+                  -o ${OUTPUT_BIN} ./
+        done
+    done
+fi
+
+if [ ! -e bin/rancher-compose-executor ]; then
+    ln -s rancher-compose bin/rancher-compose-executor
+fi

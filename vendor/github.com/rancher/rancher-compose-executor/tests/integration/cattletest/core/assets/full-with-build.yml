@@ -1,0 +1,90 @@
+web:
+    build: github.com/ibuildthecloud/tiny-build
+    dockerfile: something/other
+    command: /bin/sh -c
+    net: host
+    pid: host
+    dns:
+    - 8.8.8.8
+    - 1.1.1.1
+    ports:
+    - 80:81
+    - 123
+    volumes:
+    - /tmp/foo
+    - /tmp/x:/tmp/y
+    environment:
+      foo: bar
+      a: b
+    cap_add:
+    - ALL
+    - SYS_ADMIN
+    cap_drop:
+    - NET_ADMIN
+    - SYS_ADMIN
+    dns_search:
+    - foo.com
+    - bar.com
+    working_dir: /somewhere
+    entrypoint: /bin/foo bar
+    user: somebody
+    hostname: myhostname
+    domainname: example.com
+    mem_limit: 100
+    memswap_limit: 101
+    privileged: true
+    restart: always
+    stdin_open: true
+    tty: true
+    cpu_shares: 42
+    cpuset: 1,2
+    log_driver: syslog
+    log_opt:
+      tag: foo
+    devices:
+    - /dev/sda:/dev/a
+    - /dev/sdb:/dev/c:ro
+    labels:
+      a: b
+      c: d
+      io.rancher.service.selector.container: foo
+      io.rancher.service.selector.link: bar in (a,b)
+    expose:
+    - 21
+    extra_hosts:
+    - host:1.1.1.1
+    - host:2.2.2.2
+    security_opt:
+    - "label:foo"
+    - "label:bar"
+    volume_driver: foo
+    external_links:
+    - foo
+    - bar
+    device_write_bps:
+      /dev/null: 200
+    device_write_iops:
+      /dev/vda: 3000
+    device_read_bps:
+      /dev/null: 4000
+    device_read_iops:
+      /dev/vda: 2000
+    group_add:
+    - root
+    cpu_quota: 20000
+    read_only: true
+    oom_score_adj: 100
+    shm_size: 1024
+    cgroup_parent: abcd
+    blkio_weight: 1000
+    stop_signal: SIGTERM
+    dns_opt:
+    - abc
+    cpu_period: 10000
+    mem_swappiness: 100
+    oom_kill_disable: true
+    ipc: host
+    isolation: default
+    sysctls:
+      net.core.somaxconn: "1024"
+    init: true

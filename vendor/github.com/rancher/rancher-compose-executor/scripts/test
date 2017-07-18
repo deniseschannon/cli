@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+SCRATCH_TEMP=
+
+trap destroy_root exit
+
+setup_root()
+{
+    if [ -d /scratch ]; then
+        SCRATCH_TEMP=$(mktemp -d /scratch/cattle.XXXXX)
+        rsync --exclude '*.pyc' -a ./ $SCRATCH_TEMP
+        pushd $SCRATCH_TEMP
+    fi
+}
+
+destroy_root()
+{
+    if [[ -n "$SCRATCH_TEMP" && -d "$SCRATCH_TEMP" ]]; then
+        popd
+        rsync --delete -a ${SCRATCH_TEMP}/tests/integration/.tox ./tests/integration
+        rm -rf "$SCRATCH_TEMP"
+    fi
+}
+
+cd $(dirname $0)/..
+
+PACKAGES=". $(find -name '*.go' | xargs -I{} dirname {} |  cut -f2 -d/ | sort -u | grep -Ev '(^\.$|.git|.trash-cache|vendor|bin)' | sed -e 's!^!./!' -e 's!$!/...!')"
+
+go test -race -cover -tags=test ${PACKAGES}
+
+setup_root
+
+cd tests/integration
+export CATTLE_URL=${CATTLE_URL:-http://localhost:8080/v2-beta/schemas}
+
+if [ -e .tox ] && [ ! -e .tox/py27/include/python2.7 ]; then
+    rm -rf .tox
+fi
+
+tox "$@"
+
+echo OK

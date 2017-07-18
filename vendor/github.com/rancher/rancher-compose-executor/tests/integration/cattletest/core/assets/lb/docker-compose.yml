@@ -1,0 +1,6 @@
+lb:
+    image: rancher/lb-service-haproxy
+    ports:
+    - 80
+web:
+    image: nginx

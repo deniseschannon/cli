@@ -1,0 +1,2 @@
+web:
+    image: rancher/external-service

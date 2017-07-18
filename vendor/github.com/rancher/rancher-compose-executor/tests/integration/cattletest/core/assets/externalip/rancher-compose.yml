@@ -1,0 +1,7 @@
+web:
+    external_ips:
+    - 1.1.1.1
+    - 2.2.2.2
+    health_check:
+      port: 80
+      healthy_threshold: 2

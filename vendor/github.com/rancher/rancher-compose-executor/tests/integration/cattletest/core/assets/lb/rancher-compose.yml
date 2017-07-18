@@ -1,0 +1,15 @@
+web:
+  scale: 2
+lb:
+  scale: 1
+  lb_config:
+    port_rules:
+    - source_port: 80
+      target_port: 80
+      service: web
+      protocol: https
+      hostname: hostname
+      path: /path
+    config: |
+      global
+          foo bar
